@@ -1,0 +1,23 @@
+gateway:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - host: loki.k8s.local
+        paths:
+          - path: /
+            pathType: Prefix
+
+write:
+  replicas: 1
+
+read:
+  replicas: 1
+
+selfMonitoring:
+    enabled: false
+
+loki:
+  commonConfig:
+    replication_factor: 1
+  auth_enabled: false

@@ -1,0 +1,10 @@
+operator:
+  replicaCount: 1
+
+console:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    host: minio.k8s.local
+    path: /
+    pathType: Prefix

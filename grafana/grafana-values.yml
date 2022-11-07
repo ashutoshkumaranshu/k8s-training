@@ -1,0 +1,7 @@
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  path: /
+  pathType: Prefix
+  hosts:
+    - grafana.k8s.local

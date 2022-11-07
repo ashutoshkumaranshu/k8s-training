@@ -1,0 +1,5 @@
+
+providers:
+  kubernetesCRD:
+    allowExternalNameServices: true
+

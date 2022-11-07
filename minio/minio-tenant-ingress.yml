@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-tenant
+  namespace: default
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: minios3.k8s.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: minio1
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
