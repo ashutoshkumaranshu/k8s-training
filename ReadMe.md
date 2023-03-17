@@ -70,6 +70,14 @@ $ helm install --create-namespace -n metallb metallb metallb/metallb
 $ kubectl apply -f metallb/metallb-iprange.yml
 ```
 
+# Install traefik
+
+```
+$ helm repo add traefik https://helm.traefik.io/traefik
+$ helm install --create-namespace -n traefik traefik traefik/traefik -f traefik/traefik-values.yml
+# Now you can access the ui on http://treafik.k8s.local/dashboard/
+```
+
 # Update your Linux dnsmasq setting to point to traefik loadbalanced IP
 
 ``` 
@@ -91,16 +99,6 @@ $ dig something.k8s.local
 ; ANSWER SECTION:
 something.k8s.local.    0       IN      A       192.168.39.2
 ....
-```
-
-# Install traefik
-
-```
-$ helm repo add traefik https://helm.traefik.io/traefik
-$ helm install --create-namespace -n traefik traefik traefik/traefik -f traefik/traefik-values.yml
-# Install the dashboard ingress optionaly
-$ kubectl apply -f traefik/traefik-dash-ingress.yml
-# Now you can access the ui on http://treafik.k8s.local/dashboard/
 ```
 
 # Install minio
