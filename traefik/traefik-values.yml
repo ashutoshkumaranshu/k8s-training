@@ -3,3 +3,8 @@ providers:
   kubernetesCRD:
     allowExternalNameServices: true
 
+ingressRoute:    
+  dashboard:    
+    enabled: true
+    entryPoints: ["web","websecure"]    
+    matchRule: Host(`traefik.k8s.local`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
