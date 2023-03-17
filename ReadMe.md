@@ -79,6 +79,12 @@ $ kubectl get svc -n traefik -o jsonpath='{.items[0].status.loadBalancer.ingress
 # > address=/k8s.local/192.168.39.2
 # restart NetworkManager service
 $ sudo systemctl restart NetworkManager
+# add NetworkManager as local resolver to systemd-resolved
+# add the below lines to [Resolve] section
+# DNS=127.0.1.1 
+# Domains=~k8s.lab
+$ sudo systemctl restart systemd-resolved
+
 # Test
 $ dig something.k8s.local
 ...
