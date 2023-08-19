@@ -1,0 +1,20 @@
+# handle ui https redirect to console http
+# Mixed Content: The page at 'https://keycloak.k8s.local/admin/master/console/' was loaded over HTTPS, but requested an insecure resource 'http://keycloak.k8s.local/realms/master/protocol/openid-connect/3p-cookies/step1.html'. This request has been blocked; the content must be served over HTTPS.
+proxy: edge
+
+# helm delete doesn!t delete the old pvc 
+# so we need to specify the nb_keycloak user password to have the same always
+postgresql:
+  password: keycloakpwd
+
+ingress:
+  tls: true
+  enabled: true
+  ingressClassName: traefik
+  hostname: keycloak.k8s.local
+  annotations:
+    cert-manager.io/cluster-issuer: "ca-issuer"
+    
+
+
+

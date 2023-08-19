@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rancher-ingress
+  namespace: cattle-system
+  annotations:
+    cert-manager.io/cluster-issuer: "ca-issuer"
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - rancher.k8s.local
+      secretName: rancher-dashboard-cert
+  rules:
+    - host: rancher.k8s.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name:  rancher
+                port:
+                  number: 80

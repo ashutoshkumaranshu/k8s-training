@@ -1,0 +1,53 @@
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
+metadata:
+  name: my-cluster
+  namespace: opensearch
+spec:
+  general:
+    version: "2.3.0"
+    httpPort: 9200
+    serviceName: my-cluster
+    setVMMaxMapCount: true
+  dashboards:
+    tls:
+      enable: false
+      generate: false
+    version: "2.9.0"
+    enable: true
+    replicas: 1
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
+  security:
+    config:
+      adminCredentialsSecret:
+        name: adminsecret
+      securityConfigSecret:
+        name: internalusers
+    tls:
+      http:
+        generate: true
+      transport:
+        generate: true
+        perNode: true
+  nodePools:
+    - component: masters
+      replicas: 3
+#     diskSize: "2Gi"
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "500m"
+        limits:
+          memory: "1Gi"
+          cpu: "500m"
+      roles:
+        - "cluster_manager"
+        - "data"
+      persistence:
+        emptyDir: {}      

@@ -5,6 +5,12 @@ console:
   ingress:
     enabled: true
     ingressClassName: traefik
-    host: minio.k8s.local
-    path: /
+    annotations:
+      cert-manager.io/cluster-issuer: "ca-issuer"
+    host: minio-operator.k8s.local
+    path: /console
     pathType: Prefix
+    tls:
+      - hosts:    
+          - minio-operator.k8s.local    
+        secretName: minio-operator-cert

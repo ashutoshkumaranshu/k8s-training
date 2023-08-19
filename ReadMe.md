@@ -4,14 +4,12 @@ This is a step-by-step guide about how to install Loki log monitoring on Kuberne
 * Minikube: the standalone k8s cluster
 * Metallb: on-prem loadbalancer for K8S 
 * Traefik: K8s ingest/ingestroute controller
+* Cert-manager: certificate manager
 * Filebeat: the leighweight log shipper
 * Logstash: the filebeat log collector that ships all thelohs to Loki (Filebeat could be replaced by logstash instances, but Filebeat has better description language in yaml)
 * Loki: The log collector engine (installed in a distributed microservice way)
 * Grafana: Loki UI
 
-Optional:
-
-* Minio could be used as an S3 storage for Loki
 
 # Problems
 
@@ -27,40 +25,54 @@ So we will go with the basic version.
 
 Install minikube with using the documentation (I used it on Linux so the backend is KVM).
 
-* Set up minikube resources (we need at least 8GB RAM and 4-6 vCPU if we use Minio)
+* Set up minikube resources (we need at least 8GB RAM and 4-6 vCPU if we use extra storage provider)
+
 ```
-$ minikube config set memory 8192
-$ minikube config set cpus 6
-$ minikube config set disk-size 20G
+$ minikube start -p lab --memory 8g --cpus 6 --disk-size 20g
 ```
 
-# Install K8S tools
+# Extra disks
+
+If you want to install some storage provider (minio or rook-ceph) you should add extra disks to your VM after minikube created it. Please note that the directory could be different (just use your preferred location) but you must use the location in other commands too
+
+```
+# Stop minikube
+$ minikube -p lab stop
+# Create the disks
+$ qemu-img create -f raw ~/VMs/minikube-extra-1-5g 5G
+$ qemu-img create -f raw ~/VMs/minikube-extra-2-5g 5G
+$ qemu-img create -f raw ~/VMs/minikube-extra-3-5g 5G
+# Attach the disks
+# previously check what is the VM name with virsh list --all (that must be the same as the profile name)
+$ virsh attach-disk lab --source ~/VMs/minikube-extra-1-2g --target vdb --cache none --persistent
+$ virsh attach-disk lab --source ~/VMs/minikube-extra-2-2g --target vdc --cache none --persistent
+$ virsh attach-disk lab --source ~/VMs/minikube-extra-3-2g --target vdd --cache none --persistent
+# Start minikube
+$ minikube -p lab start
+```
+
+# Install K8S tools on your host machine
 
 * Install kubectl with using the doc: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 * Install Helm with using the doc: https://helm.sh/docs/intro/install/
 
-# Start minikube
-
-```
-$ minikube start
-```
 
 # Install metallb
 
 This will install metallb. Please change metallb-values correspond to your minikube VM network range
 To get the range:
 ```
-# stop minikube
-$ minikube stop
+# stop minikube 
+$ minikube stop -p lab
 # get the vnets
 $ virsh net-list
 # Get the definition of minikube vnet
-$ virsh net-dumpxml mk-minikube | grep range
+$ virsh net-dumpxml mk-lab | grep range
 # Change the dhcp range to have a fix ip range for metallb eg.:
-$ virsh net-update mk-minikube delete ip-dhcp-range "<range start='192.168.39.2' end='192.168.39.254'/>" --live --config
-$ virsh net-update mk-minikube add ip-dhcp-range "<range start='192.168.39.150' end='192.168.39.254'/>" --live --config
-# start minikube
-$ minikube start
+$ virsh net-update mk-lab delete ip-dhcp-range "<range start='192.168.39.2' end='192.168.39.254'/>" --live --config
+$ virsh net-update mk-lab add ip-dhcp-range "<range start='192.168.39.150' end='192.168.39.254'/>" --live --config
+# start minikube 
+$ minikube start -p lab
 # let's update metallb-values.yml file with the new range eg.: 192.168.39.2-192.168.39.149
 ```
 
@@ -75,7 +87,7 @@ $ kubectl apply -f metallb/metallb-iprange.yml
 ```
 $ helm repo add traefik https://helm.traefik.io/traefik
 $ helm install --create-namespace -n traefik traefik traefik/traefik -f traefik/traefik-values.yml
-# Now you can access the ui on http://treafik.k8s.local/dashboard/
+# Now you can access the ui on http://traefik.k8s.local/dashboard/ after you set up dnsmasq
 ```
 
 # Update your Linux dnsmasq setting to point to traefik loadbalanced IP
@@ -100,6 +112,38 @@ $ dig something.k8s.local
 something.k8s.local.    0       IN      A       192.168.39.2
 ....
 ```
+
+# Install cert-manager
+
+```
+$ helm repo add jetstack https://charts.jetstack.io
+$ helm install --create-namespace -n cert-manager cert-manager jetstack/cert-manager -f cert-manager/certmgr-values.yaml
+## Create CA key and cert
+$ openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
+ -keyout cert-manager/ca.k8s.local.key -out cert-manager/ca.k8s.local.cer \
+ -subj /O=MyOrg/OU=IT/CN=ca.k8s.local \
+ -extensions ext \
+ -config cert-manager/ca.conf
+## Create CA secret
+$ kubectl -n cert-manager create secret tls internal-ca --key cert-manager/ca.k8s.local.key --cert cert-manager/ca.k8s.local.cer
+## Create cluster issuer
+$ kubectl apply -f cert-manager/cluster-issuer.yaml
+```
+
+# Install Rook
+
+```
+$ helm repo add rook-release https://charts.rook.io/release
+# Install Rook operator
+$ helm install --create-namespace -n rook-ceph rook-ceph rook-release/rook-ceph
+# Install Rook cluster
+$ helm install --create-namespace -n rook-ceph rook-ceph-cluster rook-release/rook-ceph-cluster -f rook-ceph/values.yaml
+```
+After a few minutes the cluster state will be healthy. Use this command to check
+```
+$ kubectl --namespace rook-ceph get cephcluster
+```
+If you run into issues use this guide to clean up the mess and fix the issues: https://www.talos.dev/v1.4/kubernetes-guides/configuration/ceph-with-rook/#cleaning-up
 
 # Install minio
 
@@ -153,3 +197,26 @@ $ helm install filebeat --create-namespace --namespace=monitoring elastic/filebe
 * Install Minio or use an existing one
 * Install Loki in distributed way and set it up to use minio bucket
 
+# Install OpenSearch
+
+```
+# Add the repo and install operator
+$ helm repo add opensearch-operator https://opster.github.io/opensearch-k8s-operator/
+$ helm install --create-namespace -n opensearch opensearch-operator opensearch-operator/opensearch-operator
+
+# Install the secrets as pre-requisite
+# These are changes the admin user default "admin" password
+# Use bcrypt to generate the password has for internal_users
+# "dashboarduser" must have the same password hash if you use dashboard
+$ kubectl apply -f opensearch/admin_secret.yaml
+$ kubectl apply -f opensearch/internalusers_secret.yaml
+# Install the cluster
+kubectl apply -f opensearch/cluster.yaml
+```
+# Install Hashicorp Vault for OIDC
+
+```
+$ helm repo add hashicorp https://helm.releases.hashicorp.com
+
+
+```

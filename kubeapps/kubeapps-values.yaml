@@ -1,0 +1,35 @@
+frontend:
+  replicaCount: 1
+
+ingress:
+  enabled: true
+  hostname: kubeapps.k8s.local
+  path: /
+  pathType: ImplementationSpecific
+  annotations:
+    cert-manager.io/cluster-issuer: "ca-issuer"
+  ingressClassName: "traefik"
+  tls: true
+
+authProxy:
+  enabled: true
+  skipKubeappsLoginPage: false
+  provider: oidc
+  clientID: kubeapps
+  clientSecret: xIm7Lg9mabLkzu9slhTPC6NdAbxHC51s
+  cookieSecret: oPFSwZg6PzDs495lIHHYsA==
+  extraFlags:
+    - --ssl-insecure-skip-verify
+    - --cookie-secure=false
+    - --pass-basic-auth=false
+    - --pass-access-token=true
+    - --set-xauthrequest=true
+    - --skip-jwt-bearer-tokens=true
+    - --set-authorization-header=true
+    - --pass-authorization-header=true
+    - --oidc-issuer-url=https://keycloak.k8s.local/realms/k8s-lab
+    - --login-url=https://keycloak.k8s.local/realms/k8s-lab/protocol/openid-connect/auth
+    - --redeem-url=https://keycloak.k8s.local/realms/k8s-lab/protocol/openid-connect/token
+    - --validate-url=https://keycloak.k8s.local/realms/k8s-lab/protocol/openid-connect/userinfo
+
+

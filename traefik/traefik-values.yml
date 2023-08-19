@@ -8,3 +8,4 @@ ingressRoute:
     enabled: true
     entryPoints: ["web","websecure"]    
     matchRule: Host(`traefik.k8s.local`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+
