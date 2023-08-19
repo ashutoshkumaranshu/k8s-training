@@ -1,13 +1,14 @@
-ingress:
-  enabled: true
-  ingressClassName: traefik
-  annotations:
-    cert-manager.io/cluster-issuer: "ca-issuer"
-  path: /
-  pathType: Prefix
-  hosts:
-    - grafana.k8s.local
-  tls:
-    - hosts:    
-        - grafana.k8s.local    
-      secretName: grafana-cert
+grafana:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: "ca-issuer"
+    path: /
+    pathType: Prefix
+    hosts:
+      - grafana.k8s.local
+    tls:
+      - hosts:    
+          - grafana.k8s.local    
+        secretName: grafana-cert
