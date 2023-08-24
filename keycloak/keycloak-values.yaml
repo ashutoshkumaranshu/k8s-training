@@ -1,12 +1,16 @@
-# handle ui https redirect to console http
-# Mixed Content: The page at 'https://keycloak.k8s.local/admin/master/console/' was loaded over HTTPS, but requested an insecure resource 'http://keycloak.k8s.local/realms/master/protocol/openid-connect/3p-cookies/step1.html'. This request has been blocked; the content must be served over HTTPS.
+# This is how we can handle main UI https redirect to the internal console service http
+# The error is:
+# """ Mixed Content: The page at 'https://keycloak.k8s.local/admin/master/console/' was loaded over HTTPS, 
+# but requested an insecure resource 'http://keycloak.k8s.local/realms/master/protocol/openid-connect/3p-cookies/step1.html'.
+# This request has been blocked; the content must be served over HTTPS.""""
 proxy: edge
 
-# helm delete doesn!t delete the old pvc 
-# so we need to specify the nb_keycloak user password to have the same always
+# Helm delete doesn't delete the old pvc which holds postgresql data 
+# so we need to specify the password for nb_keycloak (psotgres) user to have the same password always
 postgresql:
   password: keycloakpwd
 
+# Usual ingress definition
 ingress:
   tls: true
   enabled: true
