@@ -9,20 +9,21 @@ spec:
     httpPort: 9200
     serviceName: my-cluster
     setVMMaxMapCount: true
-  dashboards:
-    tls:
-      enable: false
-      generate: false
-    version: "2.9.0"
-    enable: true
-    replicas: 1
-    resources:
-      requests:
-        memory: "512Mi"
-        cpu: "250m"
-      limits:
-        memory: "1Gi"
-        cpu: "500m"
+    pluginsList: ["https://github.com/aiven/prometheus-exporter-plugin-for-opensearch/releases/download/2.3.0.0/prometheus-exporter-2.3.0.0.zip"]
+#  dashboards:
+#    tls:
+#      enable: false
+#      generate: false
+#    version: "2.9.0"
+#    enable: true
+#    replicas: 1
+#    resources:
+#      requests:
+#        memory: "512Mi"
+#        cpu: "250m"
+#      limits:
+#        memory: "1Gi"
+#        cpu: "500m"
   security:
     config:
       adminCredentialsSecret:

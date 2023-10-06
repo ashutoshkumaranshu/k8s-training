@@ -110,6 +110,11 @@ $ helm install --create-namespace -n keycloak keycloak -f keycloak/keycloak-valu
 
 ## Configure KeyCloak
 
+Login with adminuser as 'user' and use the password from the keycloak secret
+```
+kubectl get secret -n keycloak keycloak -o jsonpath='{.data.admin-password}' | base64 -d ; echo
+```
+
 We will crate:
 * k8s-lab realm
   ![create realm](../images/keycloak/create_realm.png)

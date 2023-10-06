@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus-ingress
+  namespace: prometheus
+  annotations:
+    cert-manager.io/cluster-issuer: "ca-issuer"
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: prometheus.k8s.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: prometheus-operated
+            port:
+              number: 9090
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - prometheus.k8s.local
+    secretName: prometheus-cert
+

@@ -1,0 +1,26 @@
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app-opensearch
+  namespace: opensearch
+spec:
+  selector:
+    matchLabels:
+      opster.io/opensearch-nodepool: masters
+  namespaceSelector:
+    any: true
+  endpoints:
+  - port: http #9200
+    scheme: https
+    path: /_prometheus/metrics
+    basicAuth:
+      username:    
+        name: adminsecret    
+        key: username    
+      password:    
+        name: adminsecret    
+        key: password
+    tlsConfig:
+      insecureSkipVerify: true

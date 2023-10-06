@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: ca-issuer
+    kubernetes.io/ingress.class: traefik
+  name: prom-op-grafana-ingress
+  namespace: prometheus
+spec:
+  rules:
+  - host: grafana.k8s.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: prometheus-operator-grafana
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - grafana.k8s.local
+    secretName: prom-op-grafana-cert

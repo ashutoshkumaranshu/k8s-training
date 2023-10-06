@@ -5,7 +5,7 @@ configs:
       name: Keycloak
       issuer: https://keycloak.k8s.local/realms/k8s-lab
       clientID: argocd
-      clientSecret: DgTi8oeH2M4trgIeQyA182WFW5H64ZX3
+      clientSecret: B5vTRKJZRkydYW0XmfFh14di76Y5aulS
       requestedScopes: ["openid", "profile", "email", "groups"]
       rootCA: |
         -----BEGIN CERTIFICATE-----    

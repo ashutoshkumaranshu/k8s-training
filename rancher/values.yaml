@@ -1,7 +1,0 @@
-bootstrapPassword: rancheradmin123
-hostname: rancher.k8s.local
-privateCA: true
-ingress:
-  enabled: false
-replicas: -1
-

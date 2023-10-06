@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus-server
+  namespace: prometheus
+spec:
+  alerting:
+    alertmanagers:
+    - name: prometheus-alertmanager
+      namespace: prometheus
+      port: http
+  evaluationInterval: 15s
+  externalUrl: http://prometheus.k8s.local
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+  retention: 12h
+  scrapeInterval: 60s
+  serviceAccountName: prometheus-user
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}
+  podMonitorSelector: {}
