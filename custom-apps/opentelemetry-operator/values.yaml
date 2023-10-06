@@ -1,0 +1,9 @@
+opentelemetry-operator:
+  admissionWebhooks:
+    certManager:
+      enabled: true
+      issuerRef:
+        kind: ClusterIssuer
+        name: ca-issuer
+    autoGenerateCert: false
+
