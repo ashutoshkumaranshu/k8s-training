@@ -167,13 +167,42 @@ $ helm install --create-namespace -n argocd argocd -f argocd/argocd-values.yaml 
 After you set up everything you should be able to log in with the created adminuser with the password with clicking on the "Log in via Keycloak" button using URL: https://argocd.k8s.local
 
 * Create a project
+  ```
+  $ argocd proj create k8s-lab --description "All k8s-lab applications" -d https://kubernetes.default.svc,\*
+  ```
+  OR
   ![create project](../images/argocd/create_new_project.png)
 * In "Source Repositories" section click EDIT to add new repo
+  ```
+  $ argocd proj add-source k8s-lab https://gitlab.com/talentiaacademy/k8s-helm-training.git
+  ```
+  OR
   ![add source repo](../images/argocd/add_source_repo.png)
 * In "Destination" section allow all namespaces to be used for deploying
   ![specify destination](../images/argocd/specify_destination.png)
 * In "Cluster resource allow list" section allow to create all kubernetes kinds on all API group (without this deployments will fail. This very open "allow" is good for our lab but in production you can consider more secure settings)
+  ```
+  $ argocd proj allow-cluster-resource k8s-lab "*" "*"
+  ```
+  OR
   ![create allow list](../images/argocd/create_allow_list.png)
+
+### ArgoCD CLI usage 
+
+If you want to use argcd cli you must install it first then set it up. 
+* For the installation just follow the documantation page
+* To log in:
+  * Get the builtin admin user password first
+  ```
+  $ kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
+  ```
+  * Login:
+  ```
+  $ argocd --insecure --username=admin login argocd.k8s.local
+  # and provide the password
+  ```
+
+Happy argocding :D
 
 
 > # ✋ Now you can continue with installing your first app on the cluster with ArgoCD [here](../basicservices/ReadMe.md)
