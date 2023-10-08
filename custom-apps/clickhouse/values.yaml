@@ -1,0 +1,34 @@
+---
+
+clickhouse:
+  shards: 1
+  replicaCount: 3
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      memory: 256Mi
+
+  auth:
+    username: admin
+    password: adminpwd
+
+  keeper:
+    enabled: true
+
+  ingress:
+    enabled: true
+    hostname: clickhouse.k8s.local
+    ingressClassName: "traefik"
+    annotations:
+      cert-manager.io/cluster-issuer: "ca-issuer"
+    extraTls:
+      - hosts:
+          - clickhouse.k8s.local
+        secretName: clickhouse-cert
+
+  persistence:
+    size: 2Gi
+
+  zookeeper:
+    enabled: false

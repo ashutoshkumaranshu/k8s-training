@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: clcikhouse-cluster
+spec:
+  destination:
+    namespace: clickhouse
+    server: 'https://kubernetes.default.svc'
+  project: k8s-lab
+  source:
+    path: custom-apps/clickhouse
+    repoURL: 'https://gitlab.com/talentiaacademy/k8s-helm-training.git'
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
