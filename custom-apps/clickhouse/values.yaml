@@ -2,7 +2,7 @@
 
 clickhouse:
   shards: 1
-  replicaCount: 3
+  replicaCount: 1
   resources:
     limits:
       memory: 512Mi
