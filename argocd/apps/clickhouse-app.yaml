@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: clcikhouse-cluster
+  name: clickhouse-cluster
   namespace: argocd
 spec:
   destination:

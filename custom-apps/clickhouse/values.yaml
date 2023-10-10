@@ -2,19 +2,21 @@
 
 clickhouse:
   shards: 1
-  replicaCount: 1
+  # due to the exporter cannot handle cluster we don1t need lcuster
+  replicaCount: 0
   resources:
     limits:
-      memory: 512Mi
+      memory: 1Gi
     requests:
       memory: 256Mi
 
   auth:
     username: admin
     password: adminpwd
-
+ 
+  # due to the exporter cannot handle cluster we don1t need lcuster
   keeper:
-    enabled: true
+    enabled: false
 
   ingress:
     enabled: true
