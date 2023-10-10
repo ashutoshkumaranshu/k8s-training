@@ -12,6 +12,8 @@ spec:
     path: custom-apps/opentelemetry-operator
     repoURL: https://gitlab.com/talentiaacademy/k8s-helm-training.git
     targetRevision: HEAD
+    directory:
+      recurse: true
     helm:
       valueFiles:
         - values.yaml
