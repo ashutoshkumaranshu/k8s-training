@@ -3,7 +3,7 @@
 clickhouse:
   shards: 1
   # due to the exporter cannot handle cluster we don1t need lcuster
-  replicaCount: 0
+  replicaCount: 1
   resources:
     limits:
       memory: 1Gi
