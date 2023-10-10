@@ -1,4 +1,17 @@
 grafana:
+  plugins:
+    - grafana-clickhouse-datasource
+
+  sidecar:
+    dashboards:
+      enabled: true
+    datasources:
+      enabled: true
+    plugins:
+      enabled: true
+    alerts:
+      enabled: true
+
   ingress:
     enabled: true
     ingressClassName: traefik
