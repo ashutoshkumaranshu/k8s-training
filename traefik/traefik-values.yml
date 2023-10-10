@@ -2,3 +2,6 @@
 providers:
   kubernetesCRD:
     allowExternalNameServices: true
+  kubernetesIngress:
+    publishedService:
+      enabled: true
