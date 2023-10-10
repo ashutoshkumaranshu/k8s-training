@@ -1,0 +1,165 @@
+---
+
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: opentelemetrycollector-sample
+  namespace: opentelemetry
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  mode: daemonset
+  image: otel/opentelemetry-collector-contrib:latest
+  serviceAccount: opentelemetry-operator
+  securityContext:
+    allowPrivilegeEscalation: true
+    privileged: true 
+    runAsUser: 0
+    runAsGroup: 0
+  podSecurityContext:
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: 0
+  volumeMounts:
+    - mountPath: /var/log/pods
+      name: varlogpods
+    - mountPath: /var/lib/docker
+      name: varlibdocker
+  volumes: 
+    - name: varlogpods
+      hostPath:
+        path: /var/log/pods
+    - name: varlibdocker
+      hostPath:
+        path: /var/lib/docker
+  config: |
+    receivers:
+      filelog:
+        include:
+          - /var/log/pods/*/*/*.log
+        exclude:
+          - /var/log/pods/*/otc-container/*.log
+        start_at: end
+        include_file_path: true
+        include_file_name: false
+        operators:
+          # Find out which format is used by kubernetes
+          - type: router
+            id: get-format
+            routes:
+              - output: parser-docker
+                expr: body matches "^\\{"
+              - output: parser-crio
+                expr: body matches "^[^ Z]+ "
+              - output: parser-containerd
+                expr: body matches "^[^ Z]+Z"
+          # Parse CRI-O format
+          - type: regex_parser
+            id: parser-crio
+            regex: '^(?P<time>[^ Z]+) (?P<stream>stdout|stderr) (?P<logtag>[^ ]*) ?(?P<log>.*)$'
+            output: extract_metadata_from_filepath
+            timestamp:
+              parse_from: attributes.time
+              layout_type: gotime
+              layout: '2006-01-02T15:04:05.999999999Z07:00'
+          # Parse CRI-Containerd format
+          - type: regex_parser
+            id: parser-containerd
+            regex: '^(?P<time>[^ ^Z]+Z) (?P<stream>stdout|stderr) (?P<logtag>[^ ]*) ?(?P<log>.*)$'
+            output: extract_metadata_from_filepath
+            timestamp:
+              parse_from: attributes.time
+              layout: '%Y-%m-%dT%H:%M:%S.%LZ'
+          # Parse Docker format
+          - type: json_parser
+            id: parser-docker
+            output: extract_metadata_from_filepath
+            timestamp:
+              parse_from: attributes.time
+              layout: '%Y-%m-%dT%H:%M:%S.%LZ'
+          # Extract metadata from file path
+          - type: regex_parser
+            id: extract_metadata_from_filepath
+            regex: '^.*\/(?P<namespace>[^_]+)_(?P<pod_name>[^_]+)_(?P<uid>[a-f0-9\-]{36})\/(?P<container_name>[^\._]+)\/(?P<restart_count>\d+)\.log$'
+            parse_from: attributes["log.file.path"]
+            cache:
+              size: 128  # default maximum amount of Pods per Node is 110
+          # Update body field after finishing all parsing
+          - type: move
+            from: attributes.log
+            to: body
+          # Rename attributes
+          - type: move
+            from: attributes.stream
+            to: attributes["log.iostream"]
+          - type: move
+            from: attributes.container_name
+            to: resource["k8s.container.name"]
+          - type: move
+            from: attributes.namespace
+            to: resource["k8s.namespace.name"]
+          - type: move
+            from: attributes.pod_name
+            to: resource["k8s.pod.name"]
+          - type: move
+            from: attributes.restart_count
+            to: resource["k8s.container.restart_count"]
+          - type: move
+            from: attributes.uid
+            to: resource["k8s.pod.uid"]
+
+    processors:
+      k8sattributes:
+        auth_type: "serviceAccount"
+        passthrough: false
+        extract:
+          metadata:
+            - k8s.pod.name
+            - k8s.pod.uid
+            - k8s.deployment.name
+            #- k8s.cluster.name
+            - k8s.namespace.name
+            - k8s.node.name
+            - k8s.pod.start_time
+              #- k8s.cluster.uid
+          # Pod labels which can be fetched via K8sattributeprocessor
+          #labels:
+          #  - tag_name: key1
+          #    key: label1
+          #    from: pod
+          #  - tag_name: key2
+          #    key: label2
+          #    from: pod
+        # Pod association using resource attributes and connection
+        pod_association:
+          - sources:
+            - from: resource_attribute
+              name: k8s.pod.uid
+
+    exporters:
+      debug:
+        verbosity: detailed
+      clickhouse:
+        endpoint: tcp://clickhouse-cluster.clickhouse.svc.cluster.local:9000
+        username: admin
+        password: adminpwd
+        database: otel
+        logs_table_name: otel_logs
+        traces_table_name: otel_traces
+        ttl_days: 3
+        timeout: 10s
+        sending_queue:
+          queue_size: 100
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 300s
+    
+    service:
+      pipelines:
+        logs:
+          receivers: [filelog]
+          processors: [k8sattributes]
+          exporters: [debug,clickhouse]
+
