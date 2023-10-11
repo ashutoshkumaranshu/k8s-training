@@ -140,7 +140,7 @@ spec:
       debug:
         verbosity: detailed
       clickhouse:
-        endpoint: tcp://clickhouse-cluster.clickhouse.svc.cluster.local:9000
+        endpoint: tcp://clickhouse-clickhouse-cluster.clickhouse.svc.cluster.local:9000
         username: admin
         password: adminpwd
         database: otel
