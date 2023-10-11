@@ -1,0 +1,12 @@
+apiVersion: v2
+name: k8s-lab-clickhouse-operator
+description: A Helm chart to pull the original clickhouse operator with argocd
+
+type: application
+version: 0.1
+appVersion: "1.0"
+
+dependencies:
+- name: altinity-clickhouse-operator
+  version: 0.21.3
+  repository: https://docs.altinity.com/clickhouse-operator/

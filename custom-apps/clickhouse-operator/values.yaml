@@ -1,0 +1,7 @@
+---
+
+clickhouse-operator:
+  operator:
+    secret:
+      username: admin
+      password: adminpwd
