@@ -1,0 +1,104 @@
+---
+
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-k8s-metrics
+  namespace: opentelemetry
+spec:
+  mode: daemonset
+  image: otel/opentelemetry-collector-contrib:latest
+  serviceAccount: opentelemetry-operator
+  env:
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.hostIP
+    - name: K8S_CLUSTER_NAME
+      value: k8s-lab
+  config: |
+    receivers:
+      
+      kubeletstats:
+        collection_interval: 10s
+        auth_type: "serviceAccount"
+        endpoint: https://${env:K8S_NODE_NAME}:10250
+        insecure_skip_verify: true
+        metric_groups:
+          - container
+          - pod
+          - volume
+          - node
+        extra_metadata_labels:
+          - container.id
+      
+      k8s_cluster:
+        collection_interval: 10s
+        node_conditions_to_report: [Ready, MemoryPressure,DiskPressure,NetworkUnavailable]
+        allocatable_types_to_report: [cpu, memory, storage, ephemeral-storage]
+
+    processors:
+      resourcedetection/system:
+        detectors: [env, system]
+        timeout: 2s
+        override: false
+
+      attributes/metrics:
+        actions:
+          - action: insert
+            key: cluster
+            value: k8s-lab
+
+      resource:
+        attributes:
+          - action: insert
+            key: cluster
+            value: k8s-lab
+
+      batch:
+
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 128
+
+      k8sattributes:
+        auth_type: "serviceAccount"
+        passthrough: true
+        filter:
+          node_from_env_var: K8S_NODE_NAME
+        extract:
+          metadata:
+            - k8s.pod.name
+            - k8s.pod.uid
+            - k8s.deployment.name
+            - k8s.container.name
+            - k8s.namespace.name
+            - k8s.node.name
+            - k8s.pod.start_time
+
+    exporters:
+      debug:
+        verbosity: detailed
+      clickhouse:
+        endpoint: tcp://clickhouse-clickhouse-cluster.clickhouse.svc.cluster.local:9000
+        username: admin
+        password: adminpwd
+        database: otel
+        metrics_table_name: otel_metrics
+        ttl_days: 3
+        timeout: 10s
+        sending_queue:
+          queue_size: 100
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 300s
+    
+    service:
+      pipelines:
+        metrics:
+          receivers: [kubeletstats, k8s_cluster]
+          processors: [resourcedetection/system, attributes/metrics, resource, batch, memory_limiter, k8sattributes]
+          exporters: [clickhouse]
