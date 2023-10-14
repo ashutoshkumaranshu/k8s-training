@@ -122,7 +122,7 @@ $ argocd app sync argocd/grafana
 
 You can install it as an ArgoCD app
 ```
-$ kubectl apply -f argocd/apps/grafana-app.yaml
+$ kubectl apply -f argocd/apps/grafana-dashboards-app.yaml
 ```
 
 Now, don't forget to sync the application on the UI or with argocd cli
@@ -135,4 +135,7 @@ Now you can check the dashboards on Grafana UI https://grafana.k8s.local. For th
 ```
 $ kubectl get secret -n grafana grafana -o jsonpath='{.data.admin-password}' | base64 -d ; echo
 ```
+
+Since datasource is not under the provisioning process you need to create a clickhouse datasource manually.
+* URI: 
 

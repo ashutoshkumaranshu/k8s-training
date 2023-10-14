@@ -166,6 +166,11 @@ $ helm install --create-namespace -n argocd argocd -f argocd/argocd-values.yaml 
 
 After you set up everything you should be able to log in with the created adminuser with the password with clicking on the "Log in via Keycloak" button using URL: https://argocd.k8s.local
 
+* First add your forked repo to ArgoCD globaly
+  ```
+  $ argocd repo add https://<your forked repo URI>/k8s-helm-training.git --username <your username> --password <your password>
+  ``` 
+
 * Create a project
   ```
   $ argocd proj create k8s-lab --description "All k8s-lab applications" -d https://kubernetes.default.svc,\*
