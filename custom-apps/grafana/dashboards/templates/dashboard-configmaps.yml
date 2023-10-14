@@ -12,3 +12,17 @@ data:
   {{ $dashname }}.json: {{ $.Files.Get $path | toJson }}
 {{ end }}
 
+
+{{- range $path, $_ :=  .Files.Glob  "dashboards/**.yaml" }}
+{{ $dsname := $path | trimPrefix "datasources/" | trimSuffix ".yaml" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grfana-datasource-{{ $dsname }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    grafana_datasource: "{{ $dsname }}"
+data:
+  {{ $dsname }}.yaml: {{ $.Files.Get $path | indent 4 }}
+{{ end }}

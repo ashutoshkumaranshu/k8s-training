@@ -1,0 +1,31 @@
+---
+apiVersion: 1
+
+deleteDatasources:
+  - name: Clickhouse
+    orgId: 1
+
+datasources:
+  - id: grafana-clickhouse-datasource
+    uid: db746751-8f0a-4bfe-9db4-3b6bb05d12fb
+    orgId: 1
+    name: ClickHouse
+    type: grafana-clickhouse-datasource
+    typeLogoUrl: ''
+    access: proxy
+    url: ''
+    user: ''
+    database: ''
+    basicAuth: false
+    basicAuthUser: ''
+    withCredentials: false
+    isDefault: true
+    jsonData:
+      port: 9000
+      server: clickhouse-clickhouse-cluster.clickhouse.svc.cluster.local
+      tlsSkipVerify: true
+      username: admin
+    secureJsonFields:
+      password: adminpwd
+    version: 3
+    readOnly: false

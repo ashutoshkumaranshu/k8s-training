@@ -180,7 +180,7 @@
             ],
             "mode": "trend",
             "orderBy": [],
-            "table": "otel_traces",
+            "table": "otel_demo_traces",
             "timeField": "Timestamp",
             "timeFieldType": "DateTime64(9)"
           },
@@ -220,13 +220,13 @@
               ],
               "mode": "trend",
               "orderBy": [],
-              "table": "otel_traces",
+              "table": "otel_demo_traces",
               "timeField": "Timestamp",
               "timeFieldType": "DateTime64(9)"
             }
           },
           "queryType": "sql",
-          "rawSql": "SELECT $__timeInterval(Timestamp) as time, ServiceName, count() as ` ` FROM otel.\"otel_traces\" WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id) AND $__timeFilter(Timestamp)  AND ServiceName In (${serviceName:singlequote}) GROUP BY ServiceName, time ORDER BY time ASC LIMIT 100000",
+          "rawSql": "SELECT $__timeInterval(Timestamp) as time, ServiceName, count() as ` ` FROM otel.\"otel_demo_traces\" WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id) AND $__timeFilter(Timestamp)  AND ServiceName In (${serviceName:singlequote}) GROUP BY ServiceName, time ORDER BY time ASC LIMIT 100000",
           "refId": "A",
           "selectedFormat": 0
         }
@@ -345,7 +345,7 @@
             ],
             "mode": "trend",
             "orderBy": [],
-            "table": "otel_traces",
+            "table": "otel_demo_traces",
             "timeField": "Timestamp",
             "timeFieldType": "DateTime64(9)"
           },
@@ -385,13 +385,13 @@
               ],
               "mode": "trend",
               "orderBy": [],
-              "table": "otel_traces",
+              "table": "otel_demo_traces",
               "timeField": "Timestamp",
               "timeFieldType": "DateTime64(9)"
             }
           },
           "queryType": "sql",
-          "rawSql": "SELECT $__timeInterval(Timestamp) as time, ServiceName,\n\tquantile(0.99)(Duration)/1000000 AS p99 FROM otel.\"otel_traces\" WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id) AND $__timeFilter(Timestamp) AND  ( Timestamp  >= $__fromTime AND Timestamp <= $__toTime ) AND ServiceName In (${serviceName:singlequote}) AND ServiceName != 'loadgenerator' GROUP BY time, ServiceName ORDER BY time ASC LIMIT 100000",
+          "rawSql": "SELECT $__timeInterval(Timestamp) as time, ServiceName,\n\tquantile(0.99)(Duration)/1000000 AS p99 FROM otel.\"otel_demo_traces\" WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id) AND $__timeFilter(Timestamp) AND  ( Timestamp  >= $__fromTime AND Timestamp <= $__toTime ) AND ServiceName In (${serviceName:singlequote}) AND ServiceName != 'loadgenerator' GROUP BY time, ServiceName ORDER BY time ASC LIMIT 100000",
           "refId": "A",
           "selectedFormat": 0
         }
@@ -510,7 +510,7 @@
             ],
             "mode": "trend",
             "orderBy": [],
-            "table": "otel_traces",
+            "table": "otel_demo_traces",
             "timeField": "Timestamp",
             "timeFieldType": "DateTime64(9)"
           },
@@ -550,13 +550,13 @@
               ],
               "mode": "trend",
               "orderBy": [],
-              "table": "otel_traces",
+              "table": "otel_demo_traces",
               "timeField": "Timestamp",
               "timeFieldType": "DateTime64(9)"
             }
           },
           "queryType": "sql",
-          "rawSql": "SELECT $__timeInterval(Timestamp) as time, count(*) as ` `,\n\tServiceName FROM otel.\"otel_traces\" WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id) AND $__timeFilter(Timestamp) AND ServiceName In (${serviceName:singlequote}) AND StatusCode= 'STATUS_CODE_ERROR' and ServiceName != 'loadgenerator' GROUP BY ServiceName, time ORDER BY time ASC LIMIT 100000",
+          "rawSql": "SELECT $__timeInterval(Timestamp) as time, count(*) as ` `,\n\tServiceName FROM otel.\"otel_demo_traces\" WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id) AND $__timeFilter(Timestamp) AND ServiceName In (${serviceName:singlequote}) AND StatusCode= 'STATUS_CODE_ERROR' and ServiceName != 'loadgenerator' GROUP BY ServiceName, time ORDER BY time ASC LIMIT 100000",
           "refId": "A",
           "selectedFormat": 0
         }
@@ -760,7 +760,7 @@
             "limit": 100,
             "mode": "list",
             "orderBy": [],
-            "table": "otel_traces"
+            "table": "otel_demo_traces"
           },
           "datasource": {
             "type": "grafana-clickhouse-datasource",
@@ -791,11 +791,11 @@
               "limit": 100,
               "mode": "list",
               "orderBy": [],
-              "table": "otel_traces"
+              "table": "otel_demo_traces"
             }
           },
           "queryType": "sql",
-          "rawSql": "SELECT min(Timestamp) as timestamp, TraceId as `Trace Id`, argMin(ServiceName, Timestamp) as `Service Name`, sum(Duration)/1000000 as Duration from otel.otel_traces WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id)  AND ServiceName In (${serviceName:singlequote}) AND ServiceName != 'loadgenerator' AND $__timeFilter(Timestamp) GROUP BY TraceId ORDER BY Duration DESC LIMIT 100",
+          "rawSql": "SELECT min(Timestamp) as timestamp, TraceId as `Trace Id`, argMin(ServiceName, Timestamp) as `Service Name`, sum(Duration)/1000000 as Duration from otel.otel_demo_traces WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id)  AND ServiceName In (${serviceName:singlequote}) AND ServiceName != 'loadgenerator' AND $__timeFilter(Timestamp) GROUP BY TraceId ORDER BY Duration DESC LIMIT 100",
           "refId": "A",
           "selectedFormat": 1
         }
@@ -830,7 +830,7 @@
             }
           },
           "queryType": "sql",
-          "rawSql": "SELECT TraceId as traceID, SpanId as spanID, SpanName as operationName, ParentSpanId as parentSpanID, ServiceName as serviceName, Duration/1000000 as duration, Timestamp as startTime, arrayMap(key -> map('key', key, 'value',SpanAttributes[key]), mapKeys(SpanAttributes)) as tags, arrayMap(key -> map('key', key, 'value',ResourceAttributes[key]), mapKeys(ResourceAttributes)) as serviceTags FROM otel.otel_traces WHERE TraceId = '${trace_id}' ORDER BY startTime ASC",
+          "rawSql": "SELECT TraceId as traceID, SpanId as spanID, SpanName as operationName, ParentSpanId as parentSpanID, ServiceName as serviceName, Duration/1000000 as duration, Timestamp as startTime, arrayMap(key -> map('key', key, 'value',SpanAttributes[key]), mapKeys(SpanAttributes)) as tags, arrayMap(key -> map('key', key, 'value',ResourceAttributes[key]), mapKeys(ResourceAttributes)) as serviceTags FROM otel.otel_demo_traces WHERE TraceId = '${trace_id}' ORDER BY startTime ASC",
           "refId": "A",
           "selectedFormat": 3
         }
@@ -852,14 +852,14 @@
           "type": "grafana-clickhouse-datasource",
           "uid": "${DS_CLICKHOUSE}"
         },
-        "definition": "SELECT DISTINCT ServiceName FROM otel.otel_traces",
+        "definition": "SELECT DISTINCT ServiceName FROM otel.otel_demo_traces",
         "hide": 0,
         "includeAll": true,
         "label": "Service Name",
         "multi": true,
         "name": "serviceName",
         "options": [],
-        "query": "SELECT DISTINCT ServiceName FROM otel.otel_traces",
+        "query": "SELECT DISTINCT ServiceName FROM otel.otel_demo_traces",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -873,14 +873,14 @@
           "type": "grafana-clickhouse-datasource",
           "uid": "${DS_CLICKHOUSE}"
         },
-        "definition": "SELECT DISTINCT TraceId FROM otel.otel_traces WHERE ParentSpanId = '' LIMIT 100",
+        "definition": "SELECT DISTINCT TraceId FROM otel.otel_demo_traces WHERE ParentSpanId = '' LIMIT 100",
         "hide": 0,
         "includeAll": true,
         "label": "Trace Id",
         "multi": false,
         "name": "trace_id",
         "options": [],
-        "query": "SELECT DISTINCT TraceId FROM otel.otel_traces WHERE ParentSpanId = '' LIMIT 100",
+        "query": "SELECT DISTINCT TraceId FROM otel.otel_demo_traces WHERE ParentSpanId = '' LIMIT 100",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
