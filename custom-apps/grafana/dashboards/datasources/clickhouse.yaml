@@ -28,4 +28,4 @@ datasources:
     secureJsonFields:
       password: adminpwd
     version: 3
-    readOnly: false
+    editable: true
