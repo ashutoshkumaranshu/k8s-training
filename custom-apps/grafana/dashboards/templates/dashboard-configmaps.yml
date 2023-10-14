@@ -1,3 +1,4 @@
+{{ if .Values.dashboards }}
 {{- range $path, $_ :=  .Files.Glob  "dashboards/**.json" }}  
 {{ $dashname := $path | trimPrefix "dashboards/" | trimSuffix ".json" }}
 ---
@@ -11,18 +12,21 @@ metadata:
 data:
   {{ $dashname }}.json: {{ $.Files.Get $path | toJson }}
 {{ end }}
+{{ end }}
 
-
-{{- range $path, $_ :=  .Files.Glob  "dashboards/**.yaml" }}
+{{ if .Values.datasources }}
+{{- range $path, $_ :=  .Files.Glob  "datasources/**.yaml" }}
 {{ $dsname := $path | trimPrefix "datasources/" | trimSuffix ".yaml" }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grfana-datasource-{{ $dsname }}
+  name: grafana-datasource-{{ $dsname }}
   namespace: {{ $.Release.Namespace }}
   labels:
     grafana_datasource: "{{ $dsname }}"
 data:
-  {{ $dsname }}.yaml: {{ $.Files.Get $path | indent 4 }}
+  {{ $dsname }}.yaml: |-
+{{ $.Files.Get $path | indent 4}}
+{{ end }}
 {{ end }}
