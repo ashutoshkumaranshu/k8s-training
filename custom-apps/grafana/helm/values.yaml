@@ -3,12 +3,20 @@ grafana:
     - grafana-clickhouse-datasource
 
   sidecar:
+  
     dashboards:
       enabled: true
+      folderAnnotation: dashboard_folder
+      provider:
+        allowUiUpdates: true
+        foldersFromFilesStructure: true
+
     datasources:
       enabled: true
+
     plugins:
       enabled: true
+
     alerts:
       enabled: true
 
