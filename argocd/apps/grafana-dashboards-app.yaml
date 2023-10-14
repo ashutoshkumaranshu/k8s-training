@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: clickhouse-cluster
+  name: grafana-dashboards
   namespace: argocd
 spec:
   destination:
-    namespace: clickhouse
+    namespace: grafana
     server: 'https://kubernetes.default.svc'
   project: k8s-lab
   source:
-    path: custom-apps/clickhouse
+    path: custom-apps/grafana/dashboards
     repoURL: 'https://gitlab.com/talentiaacademy/k8s-helm-training.git'
     targetRevision: HEAD
     helm:

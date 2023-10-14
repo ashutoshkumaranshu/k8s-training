@@ -3,7 +3,7 @@
 apiVersion: opentelemetry.io/v1alpha1
 kind: OpenTelemetryCollector
 metadata:
-  name: opentelemetrycollector-sample
+  name: otel-k8s-logs
   namespace: opentelemetry
   annotations:
     argocd.argoproj.io/sync-wave: "1"
@@ -80,7 +80,7 @@ spec:
           # Extract metadata from file path
           - type: regex_parser
             id: extract_metadata_from_filepath
-            regex: '^.*\/(?P<namespace>[^_]+)_(?P<pod_name>[^_]+)_(?P<uid>[a-f0-9\-]{36})\/(?P<container_name>[^\._]+)\/(?P<restart_count>\d+)\.log$'
+            regex: '^.*\/(?P<namespace>[^_]+)_(?P<pod_name>[^_]+)_(?P<uid>[a-f0-9\-]{30,})\/(?P<container_name>[^\._]+)\/(?P<restart_count>\d+)\.log$'
             parse_from: attributes["log.file.path"]
             cache:
               size: 128  # default maximum amount of Pods per Node is 110
@@ -107,9 +107,7 @@ spec:
           - type: move
             from: attributes.uid
             to: resource["k8s.pod.uid"]
-
       k8s_events:
-        auth_type : "serviceAccount"
 
       
 
@@ -153,9 +151,7 @@ spec:
         username: admin
         password: adminpwd
         database: otel
-        logs_table_name: otel_demo_logs
-        traces_table_name: otel_demo_traces
-        metric_table_name: otel_demo_metrics
+        logs_table_name: otel_logs
         ttl_days: 3
         timeout: 10s
         sending_queue:
@@ -169,7 +165,7 @@ spec:
     service:
       pipelines:
         logs:
-          receivers: [filelog]
+          receivers: [filelog, k8s_events]
           processors: [batch,memory_limiter,k8sattributes]
           exporters: [clickhouse]
 

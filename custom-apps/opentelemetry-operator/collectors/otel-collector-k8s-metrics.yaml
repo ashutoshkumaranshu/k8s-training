@@ -5,6 +5,8 @@ kind: OpenTelemetryCollector
 metadata:
   name: otel-k8s-metrics
   namespace: opentelemetry
+  annotations:    
+      argocd.argoproj.io/sync-wave: "1"
 spec:
   mode: daemonset
   image: otel/opentelemetry-collector-contrib:latest

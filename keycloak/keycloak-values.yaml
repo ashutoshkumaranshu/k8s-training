@@ -9,6 +9,9 @@ proxy: edge
 # so we need to specify the password for nb_keycloak (psotgres) user to have the same password always
 postgresql:
   password: keycloakpwd
+  primary:
+    persistence:
+      size: 2Gi
 
 # Usual ingress definition
 ingress:

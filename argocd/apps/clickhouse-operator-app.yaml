@@ -9,7 +9,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: k8s-lab
   source:
-    path: custom-apps/clickhouse-operator
+    path: custom-apps/clickhouse-operator/helm
     repoURL: 'https://gitlab.com/talentiaacademy/k8s-helm-training.git'
     targetRevision: HEAD
     helm:

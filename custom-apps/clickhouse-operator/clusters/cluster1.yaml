@@ -24,6 +24,14 @@ spec:
       admin/password: adminpwd
       admin/profile: default
       admin/quota: default
+      grafana/networks/ip:
+        - "0.0.0.0/0"
+        - "::/0"
+      grafana/password: grafanapwd
+      grafana/profile: readonly
+      grafana/quota: default
+    profiles:
+      readonly/readonly: 1
 
     # set log to INFO
     settings:
@@ -62,7 +70,7 @@ spec:
               - ReadWriteOnce
             resources:
               requests:
-                storage: 2Gi
+                storage: 10Gi
 
 
 

@@ -5,7 +5,7 @@ Install minikube with using the documentation (I used it on Linux so the backend
 * Set up minikube resources (we need at least 8GB RAM and 4-6 vCPU if we use extra storage provider)
 
 ```
-$ minikube start -p lab --memory 8g --cpus 6 --disk-size 20g
+$ minikube start -p lab --memory 8g --cpus 4 --disk-size 40g
 ```
 
 # Install K8S tools on your host machine
@@ -48,7 +48,7 @@ $ helm install --create-namespace -n traefik traefik traefik/traefik -f traefik/
 
 ## The values
 
-The example values are not necessary to the installation. This is only an example and the definitions is for allowing Traefik to route ingress traffic to an external service (that is not served by the lab k8s)
+The example values are not necessary for the installation. This is only an example and the definitions are for allowing Traefik to route ingress traffic to an external service (that is not served by the lab k8s)
 
 # Update your Linux Dnsmasq setting to point to traefik load-balanced IP
 
@@ -82,7 +82,7 @@ something.k8s.local.    0       IN      A       192.168.39.2
 # Install cert-manager
 
 During this step I will create my own CA certificate to be used for generating TLS certificates for services. After I installed cert-manager I will add the CA cert as cluster issuer.
-You can skip the CA cert creation step (starting with "opennssl req...") if you want to use the already generated one culd be found in the repo.
+You can skip the CA cert creation step (starting with "opennssl req...") if you want to use the already generated one (could be found in the repo).
 
 ```
 $ helm repo add jetstack https://charts.jetstack.io
@@ -102,7 +102,7 @@ $ kubectl apply -f cert-manager/cluster-issuer.yaml
 # Install KeyCloak
 
 I need to handle our special build cases in the values file. More information could be found in the values file comments.
-Since Keycloak helm repo is an OCI based repo I just use it to install and don't add it locally to the helm repo list.
+Since KeyCloak helm repo is an OCI based repo I just use it to install and don't add it locally to the helm repo list.
 
 ```
 $ helm install --create-namespace -n keycloak keycloak -f keycloak/keycloak-values.yaml oci://registry-1.docker.io/bitnamicharts/keycloak
