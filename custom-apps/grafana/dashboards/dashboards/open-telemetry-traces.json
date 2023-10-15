@@ -1,37 +1,4 @@
 {
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "9.4.1"
-    },
-    {
-      "type": "datasource",
-      "id": "grafana-clickhouse-datasource",
-      "name": "ClickHouse",
-      "version": "2.1.1"
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "traces",
-      "name": "Traces",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -57,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 3,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -160,7 +127,9 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["ServiceName"],
+            "groupBy": [
+              "ServiceName"
+            ],
             "limit": 10000,
             "metrics": [
               {
@@ -200,7 +169,9 @@
                   "type": "datetime"
                 }
               ],
-              "groupBy": ["ServiceName"],
+              "groupBy": [
+                "ServiceName"
+              ],
               "limit": 10000,
               "metrics": [
                 {
@@ -227,7 +198,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "DB746751-8F0A-4BFE-9DB4-3B6BB05D12FB"
+        "uid": "db746751-8f0a-4bfe-9db4-3b6bb05d12fb"
       },
       "description": "",
       "fieldConfig": {
@@ -325,7 +296,9 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["ServiceName"],
+            "groupBy": [
+              "ServiceName"
+            ],
             "limit": 10000,
             "metrics": [
               {
@@ -365,7 +338,9 @@
                   "type": "datetime"
                 }
               ],
-              "groupBy": ["ServiceName"],
+              "groupBy": [
+                "ServiceName"
+              ],
               "limit": 10000,
               "metrics": [
                 {
@@ -392,7 +367,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "DB746751-8F0A-4BFE-9DB4-3B6BB05D12FB"
+        "uid": "db746751-8f0a-4bfe-9db4-3b6bb05d12fb"
       },
       "description": "",
       "fieldConfig": {
@@ -490,7 +465,9 @@
                 "type": "datetime"
               }
             ],
-            "groupBy": ["ServiceName"],
+            "groupBy": [
+              "ServiceName"
+            ],
             "limit": 10000,
             "metrics": [
               {
@@ -530,7 +507,9 @@
                   "type": "datetime"
                 }
               ],
-              "groupBy": ["ServiceName"],
+              "groupBy": [
+                "ServiceName"
+              ],
               "limit": 10000,
               "metrics": [
                 {
@@ -557,7 +536,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "DB746751-8F0A-4BFE-9DB4-3B6BB05D12FB"
+        "uid": "db746751-8f0a-4bfe-9db4-3b6bb05d12fb"
       },
       "fieldConfig": {
         "defaults": {
@@ -710,10 +689,13 @@
       },
       "id": 4,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "fields": "",
-          "reducer": ["sum"],
+          "reducer": [
+            "sum"
+          ],
           "show": false
         },
         "showHeader": true,
@@ -724,7 +706,7 @@
           }
         ]
       },
-      "pluginVersion": "9.4.1",
+      "pluginVersion": "10.0.3",
       "targets": [
         {
           "builderOptions": {
@@ -754,9 +736,9 @@
           },
           "datasource": {
             "type": "grafana-clickhouse-datasource",
-            "uid": "DB746751-8F0A-4BFE-9DB4-3B6BB05D12FB"
+            "uid": "db746751-8f0a-4bfe-9db4-3b6bb05d12fb"
           },
-          "format": 1,
+          "format": 3,
           "meta": {
             "builderOptions": {
               "database": "otel",
@@ -787,7 +769,7 @@
           "queryType": "sql",
           "rawSql": "SELECT min(Timestamp) as timestamp, TraceId as `Trace Id`, argMin(ServiceName, Timestamp) as `Service Name`, sum(Duration)/1000000 as Duration from otel.otel_demo_traces WHERE $__conditionalAll(TraceId IN (${trace_id:singlequote}),  $trace_id)  AND ServiceName In (${serviceName:singlequote}) AND ServiceName != 'loadgenerator' AND $__timeFilter(Timestamp) GROUP BY TraceId ORDER BY Duration DESC LIMIT 100",
           "refId": "A",
-          "selectedFormat": 1
+          "selectedFormat": 3
         }
       ],
       "title": "Traces",
@@ -796,7 +778,7 @@
     {
       "datasource": {
         "type": "grafana-clickhouse-datasource",
-        "uid": "DB746751-8F0A-4BFE-9DB4-3B6BB05D12FB"
+        "uid": "db746751-8f0a-4bfe-9db4-3b6bb05d12fb"
       },
       "gridPos": {
         "h": 15,
@@ -811,7 +793,7 @@
             "type": "grafana-clickhouse-datasource",
             "uid": "DB746751-8F0A-4BFE-9DB4-3B6BB05D12FB"
           },
-          "format": 3,
+          "format": 1,
           "meta": {
             "builderOptions": {
               "fields": [],
@@ -822,7 +804,7 @@
           "queryType": "sql",
           "rawSql": "SELECT TraceId as traceID, SpanId as spanID, SpanName as operationName, ParentSpanId as parentSpanID, ServiceName as serviceName, Duration/1000000 as duration, Timestamp as startTime, arrayMap(key -> map('key', key, 'value',SpanAttributes[key]), mapKeys(SpanAttributes)) as tags, arrayMap(key -> map('key', key, 'value',ResourceAttributes[key]), mapKeys(ResourceAttributes)) as serviceTags FROM otel.otel_demo_traces WHERE TraceId = '${trace_id}' ORDER BY startTime ASC",
           "refId": "A",
-          "selectedFormat": 3
+          "selectedFormat": 1
         }
       ],
       "title": "Trace Details",
@@ -837,7 +819,11 @@
   "templating": {
     "list": [
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-clickhouse-datasource",
           "uid": "db746751-8f0a-4bfe-9db4-3b6bb05d12fb"
@@ -858,7 +844,11 @@
       },
       {
         "allValue": "empty",
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "grafana-clickhouse-datasource",
           "uid": "db746751-8f0a-4bfe-9db4-3b6bb05d12fb"
@@ -887,6 +877,6 @@
   "timezone": "",
   "title": "OTEL Traces",
   "uid": "8klBUGfVk",
-  "version": 11,
+  "version": 6,
   "weekStart": ""
 }
