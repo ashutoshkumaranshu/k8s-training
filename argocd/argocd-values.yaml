@@ -5,7 +5,7 @@ configs:
       name: Keycloak
       issuer: https://keycloak.k8s.local/realms/k8s-lab
       clientID: argocd
-      clientSecret: B5vTRKJZRkydYW0XmfFh14di76Y5aulS
+      clientSecret: XgLeBNpOl739dvPe9E1We2pynZhmGCjB
       requestedScopes: ["openid", "profile", "email", "groups"]
       rootCA: |
         -----BEGIN CERTIFICATE-----    
@@ -46,6 +46,8 @@ configs:
       g, admins, role:admin
 
 server:
+  metrics:
+    enabled: true
   ingress:
     enabled: true
     ingressClassName: "traefik"
