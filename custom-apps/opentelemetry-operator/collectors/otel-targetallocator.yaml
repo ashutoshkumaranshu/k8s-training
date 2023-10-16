@@ -1,0 +1,52 @@
+---
+
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: collector-with-ta
+  namespace: opentelemetry
+spec:
+  mode: statefulset
+  image: otel/opentelemetry-collector-contrib:latest
+  serviceAccount: opentelemetry-operator
+  targetAllocator:
+    enabled: true
+    prometheusCR:
+      enabled: true
+    serviceAccount: opentelemetry-operator
+    filterStrategy: relabel-config
+  config: |
+    receivers:
+      prometheus:
+        target_allocator:
+          endpoint: http://collector-with-ta-targetallocator
+          interval: 30s
+          collector_id: ${POD_NAME}
+          http_sd_config:
+            refresh_interval: 60s
+
+    exporters:
+      debug:
+        verbosity: detailed
+      clickhouse:
+        endpoint: tcp://clickhouse-clickhouse-cluster.clickhouse.svc.cluster.local:9000
+        username: admin
+        password: adminpwd
+        database: otel
+        metrics_table_name: otel_ta_metrics
+        ttl_days: 3
+        timeout: 10s
+        sending_queue:
+          queue_size: 100
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 300s
+
+    service:
+      pipelines:
+        metrics:
+          receivers: [prometheus]
+          processors: []
+          exporters: [clickhouse]
