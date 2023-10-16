@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: otel-ta-ingress
+  namespace: opentelemetry
+  annotations:
+    cert-manager.io/cluster-issuer: "ca-issuer"
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: otel-ta.k8s.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: collector-with-ta-targetallocator
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - otel-ta.k8s.local
+    secretName: otelta-cert

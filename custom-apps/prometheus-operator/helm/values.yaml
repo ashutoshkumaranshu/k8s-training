@@ -9,7 +9,7 @@ kube-prometheus-stack:
     enabled: false
 
   prometheus:
-    enabled: true
+    enabled: false
 
   # turn off all the shit for the operator
   kubeApiServer:
