@@ -3,6 +3,15 @@ kind: ClusterRole
 metadata:
   name: otel-collector
 rules:
+- apiGroups: # for otel targetallocator
+  - monitoring.coreos.com
+  resources:
+  - podmonitors
+  - servicemonitors
+  verbs:
+  - get
+  - list
+  - watch
 - apiGroups:
   - ""
   resources:
@@ -19,6 +28,7 @@ rules:
   - replicationcontrollers/status
   - resourcequotas
   - services
+  - secrets # for otel targetallocator
   verbs:
   - get
   - list
