@@ -1,0 +1,12 @@
+---
+# we need a very basic operator that could handle SericeMonitor and PodMonitor resources
+
+kube-prometheus-stack:
+  defaultRules:
+    create: false
+
+  grafana:
+    enabled: false
+
+  prometheus:
+    enabled: true

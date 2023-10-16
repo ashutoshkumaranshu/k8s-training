@@ -1,0 +1,12 @@
+apiVersion: v2
+name: k8s-lab-prometheus-operator
+description: A Helm chart to pull the original prometheus operator with argocd
+
+type: application
+version: 0.1
+appVersion: "1.0"
+
+dependencies:
+- name: kube-prometheus-stack
+  version: 51.8.0
+  repository: https://prometheus-community.github.io/helm-charts
