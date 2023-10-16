@@ -18,3 +18,5 @@ spec:
   syncPolicy:
     syncOptions:
     - CreateNamespace=true
+    - ServerSideApply=true # this needs because of the long annotations in the CRD definitions; prometheus is a shit
+
