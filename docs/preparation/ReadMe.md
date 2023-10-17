@@ -166,9 +166,9 @@ $ helm install --create-namespace -n argocd argocd -f argocd/argocd-values.yaml 
 
 After you set up everything you should be able to log in with the created adminuser with the password with clicking on the "Log in via Keycloak" button using URL: https://argocd.k8s.local
 
-* First add your forked repo to ArgoCD globaly
+* First add the repo to ArgoCD globaly
   ```
-  $ argocd repo add https://<your forked repo URI>/k8s-helm-training.git --username <your username> --password <your password>
+  $ argocd repo add https://gitlab.com/talentiaacademy/k8s-training.git
   ``` 
 
 * Create a project
@@ -179,7 +179,7 @@ After you set up everything you should be able to log in with the created adminu
   ![create project](../images/argocd/create_new_project.png)
 * In "Source Repositories" section click EDIT to add new repo
   ```
-  $ argocd proj add-source k8s-lab https://gitlab.com/talentiaacademy/k8s-helm-training.git
+  $ argocd proj add-source k8s-lab https://gitlab.com/talentiaacademy/k8s-training.git
   ```
   OR
   ![add source repo](../images/argocd/add_source_repo.png)

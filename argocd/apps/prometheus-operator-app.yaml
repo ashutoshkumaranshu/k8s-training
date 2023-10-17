@@ -10,7 +10,7 @@ spec:
   project: k8s-lab
   source:
     path: custom-apps/prometheus-operator/helm
-    repoURL: 'https://gitlab.com/talentiaacademy/k8s-helm-training.git'
+    repoURL: 'https://gitlab.com/talentiaacademy/k8s-training.git'
     targetRevision: HEAD
     helm:
       valueFiles:
