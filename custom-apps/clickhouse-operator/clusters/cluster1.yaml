@@ -36,7 +36,6 @@ spec:
     # set log to INFO
     settings:
       logger/level: information
-       
 
   templates:
       serviceTemplates:
