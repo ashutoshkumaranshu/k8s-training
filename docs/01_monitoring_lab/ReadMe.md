@@ -1,11 +1,12 @@
-# Basic services
+# LAB :: Building Kubernetes Monitoring
 
-We need a few basic services for mimic a real cluster
+Monitoring systems must contain the following elements
 
-* Monitoring services
-  * To collect metrics 
-  * To collect logs
-  * To display monitoring data
+```
+log/metric/trace shipper --> monitoring data storage --> Visualization --> Analysis and Alerting
+```
+
+We try to cover all the areas. 
 
 Jump to sections:
 * [Install Opentelemetry Operator](#install-opentelemetry-operator) 
@@ -18,13 +19,11 @@ Jump to sections:
 
 ## Monitoring services
 
-However prometheus is very popular I don't like it for several reason (eg.: not reliable database backend, awful configuration language, pull based behavior, etc, etc.). Also it is not good to store logs and traces. To cover logs and traces we need additional products like Elasticsearch or OpenSearch, Jaeger, or many more. And for these we need the shippers also (metricbeat, filebeat, logstash, fluentd, etc., etc.)
-Instead of the above mess let's create a standard solution that uses only one shipper and one storage:
-* OpenTelemetry collector(s) to ship the data (contrib image)
-  * It could act as Jaeger, Zipkin, Prometheus server, etc.
-* ClickHouse to store the data
-* Grafana to visualize the data
-
+Components:
+* To collect metrics/logs/traces: OpenTelemetry
+* To store monitoring Data: ClickHouse
+* To display and analyze monitoring data: Grafana
+* To send alerts: NOT IMPLEMENTED (Grafana could be used)
 
 ### Install OpenTelemetry Operator
 
@@ -66,6 +65,8 @@ $ argocd app sync argocd/clickhouse-cluster
 ```
 
 Check if all is green on ArgoCD UI, also you can reach ClickHouse play web page on https://clickhouse.k8s.local/play (set usrname to admin and password to adminpwd) with running some query like "show tables in system;"
+
+NOTE: Currently ClickHouse exporter supports only MergeTree tables (and not ReplicatedMergeTree) so we create a one node instance instead of servers with replications. ([wip](https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/26599))
 
 
 ### Install Opentelemetry Collectors
@@ -118,7 +119,7 @@ Now, don't forget to sync the application on the UI or with argocd cli
 $ argocd app sync argocd/grafana
 ```
 
-### Install Grafana Dashboards
+### Install Grafana Dashboards and Datasource
 
 You can install it as an ArgoCD app
 ```
@@ -135,7 +136,3 @@ Now you can check the dashboards on Grafana UI https://grafana.k8s.local. For th
 ```
 $ kubectl get secret -n grafana grafana -o jsonpath='{.data.admin-password}' | base64 -d ; echo
 ```
-
-Since datasource is not under the provisioning process you need to create a clickhouse datasource manually.
-* URI: 
-
